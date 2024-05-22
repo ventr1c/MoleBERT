@@ -20,11 +20,12 @@ import numpy as np
 from model import GNN, GNN_graphpred
 from sklearn.metrics import roc_auc_score
 
-from splitters import scaffold_split
+# from splitters import scaffold_split
+from splitters import scaffold_split, random_scaffold_split
 import pandas as pd
 import os
 import shutil
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 
 criterion = nn.BCEWithLogitsLoss(reduction = "none")
 
@@ -111,7 +112,7 @@ def main():
     parser.add_argument('--filename', type=str, default = '', help='output filename')
     parser.add_argument('--seed', type=int, default=42, help = "Seed for splitting the dataset.")
     parser.add_argument('--runseed', type=int, default=0, help = "Seed for minibatch selection, random initialization.")
-    parser.add_argument('--split', type = str, default="scaffold", help = "random or scaffold or random_scaffold")
+    parser.add_argument('--split', type = str, default="random_scaffold", help = "random or scaffold or random_scaffold")
     parser.add_argument('--eval_train', type=int, default = 1, help='evaluating training or not')
     parser.add_argument('--num_workers', type=int, default = 4, help='number of workers for dataset loading')
     args = parser.parse_args()
@@ -146,7 +147,6 @@ def main():
 
     #set up dataset
     dataset = MoleculeDataset("./dataset/" + args.dataset, dataset=args.dataset)
-    print(dataset)
     
     if args.split == "scaffold":
         smiles_list = pd.read_csv('./dataset/' + args.dataset + '/processed/smiles.csv', header=None)[0].tolist()
@@ -194,7 +194,7 @@ def main():
         if os.path.exists(fname):
             shutil.rmtree(fname)
             print("removed the existing file.")
-        writer = SummaryWriter(fname)
+        # writer = SummaryWriter(fname)
 
     for epoch in range(1, args.epochs+1):
         print("====epoch " + str(epoch))

@@ -1,6 +1,6 @@
 import argparse
 from loader import MoleculeDataset
-from torch_geometric.data import DataLoader
+from torch_geometric.loader import DataLoader
 from functools import partial
 import torch
 from torch import nn, einsum
@@ -14,7 +14,7 @@ from splitters import scaffold_split, random_split, random_scaffold_split
 import pandas as pd
 from util import MaskAtom
 from torch_geometric.nn import global_add_pool, global_mean_pool, global_max_pool
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 criterion = nn.CrossEntropyLoss()
 import timeit
 NUM_NODE_ATTR = 119 
@@ -179,7 +179,7 @@ def train_vae(args, epoch, model_list, loader, optimizer_list, device):
 
 def main():
     parser = argparse.ArgumentParser(description='PyTorch implementation of pre-training of graph neural networks')
-    parser.add_argument('--device', type=int, default=5,
+    parser.add_argument('--device', type=int, default=1,
                         help='which gpu to use if any (default: 0)')
     parser.add_argument('--batch_size', type=int, default=256,
                         help='input batch size for training (default: 256)')
@@ -223,9 +223,9 @@ def main():
 
     print("num layer: %d mask rate: %f mask edge: %d" %(args.num_layer, args.mask_rate, args.edge))
     #set up dataset and transform function.
-    dataset = MoleculeDataset("/root/Mole-BERT-plus/dataset/" + args.dataset, dataset=args.dataset)
-    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, num_workers = args.num_workers)
-    model = DiscreteGNN(args.num_layer, args.emb_dim).to(device)
+    dataset = MoleculeDataset("./dataset/" + args.dataset, dataset=args.dataset)
+    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
+    model = DiscreteGNN(args.num_layer, args.emb_dim, args.num_tokens).to(device)
     if args.input_model_file is not None and args.input_model_file != "":
         model.load_state_dict(torch.load(args.input_model_file))
         print("Resume training from:", args.input_model_file)

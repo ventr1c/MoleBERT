@@ -47,7 +47,6 @@ class GINConv(MessagePassing):
         edge_attr = torch.cat((edge_attr, self_loop_attr), dim = 0)
 
         edge_embeddings = self.edge_embedding1(edge_attr[:,0]) + self.edge_embedding2(edge_attr[:,1])
-
         # return self.propagate(self.aggr, edge_index, x=x, edge_attr=edge_embeddings)
         return self.propagate(edge_index, x=x, edge_attr=edge_embeddings)
 
@@ -302,7 +301,7 @@ class GNN(torch.nn.Module):
         else:
             raise ValueError("unmatched number of arguments.")
 
-        x = self.x_embedding1(x[:,0]) + self.x_embedding2(x[:,1])
+        x = self.x_embedding1(x[:,0].long()) + self.x_embedding2(x[:,1].long())
         h_list = [x]
         for layer in range(self.num_layer):
             h = self.gnns[layer](h_list[layer], edge_index, edge_attr)
